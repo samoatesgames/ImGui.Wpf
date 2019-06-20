@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using ImGui.Wpf.Controls;
+using ImGui.Wpf.Styles;
 
 namespace ImGui.Wpf
 {
@@ -39,6 +40,7 @@ namespace ImGui.Wpf
     public class ImGuiWpf : IDisposable
     {
         private readonly Panel m_controlOwner;
+        private readonly IImGuiStyle m_style = new DefaultStyle();
 
         private int m_controlId;
         private readonly Dictionary<int, IImGuiControl> m_idToControlMap = new Dictionary<int, IImGuiControl>();
@@ -171,7 +173,7 @@ namespace ImGui.Wpf
                     control = factory.CreateNew();
                     m_controlOwner.Children.Add(control.WindowsControl);
                 }
-                control.Update(data);
+                control.Update(m_style, data);
 
                 m_idToControlMap[controlId] = control;
             });

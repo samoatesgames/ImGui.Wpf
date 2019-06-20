@@ -51,9 +51,11 @@
     <Compile Include="Controls\ImSlider.cs" />
     <Compile Include="Controls\ImTextBlock.cs" />
     <Compile Include="Controls\ImTextBox.cs" />
+    <Compile Include="Styles\DefaultStyle.cs" />
     <Compile Include="Factories\ImGenericFactory.cs" />
     <Compile Include="IImGuiControl.cs" />
     <Compile Include="IImGuiControlFactory.cs" />
+    <Compile Include="IImGuiStyle.cs" />
     <Compile Include="ImGuiWpf.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

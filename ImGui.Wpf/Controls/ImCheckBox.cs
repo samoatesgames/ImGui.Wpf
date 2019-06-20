@@ -32,8 +32,11 @@ namespace ImGui.Wpf.Controls
             m_isChecked = true;
         }
 
-        public void Update(object[] data)
+        public void Update(IImGuiStyle style, object[] data)
         {
+            m_checkBox.Padding = style.Padding;
+            m_checkBox.Margin = style.Margin;
+
             m_checkBox.Content = (string)data[0];
 
             var checkState = (bool?) data[1];

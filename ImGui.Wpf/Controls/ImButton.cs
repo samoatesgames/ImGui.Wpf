@@ -21,8 +21,11 @@ namespace ImGui.Wpf.Controls
             m_isClicked = true;
         }
 
-        public void Update(object[] data)
+        public void Update(IImGuiStyle style, object[] data)
         {
+            m_button.Padding = style.Padding;
+            m_button.Margin = style.Margin;
+
             m_button.Content = (string)data[0];
         }
 

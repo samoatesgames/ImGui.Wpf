@@ -50,8 +50,15 @@ namespace ImGui.Wpf.Controls
             m_editBox.Text = m_sliderValue.ToString("F");
         }
 
-        public void Update(object[] data)
+        public void Update(IImGuiStyle style, object[] data)
         {
+            m_label.Padding = style.Padding;
+            m_label.Margin = style.Margin;
+            m_slider.Padding = style.Padding;
+            m_slider.Margin = style.Margin;
+            m_editBox.Padding = style.Padding;
+            m_editBox.Margin = style.Margin;
+
             m_label.Text = (string)data[0];
 
             var value = (double)data[1];

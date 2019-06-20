@@ -6,7 +6,7 @@ namespace ImGui.Wpf.Controls
     internal class ImTextBox : IImGuiControl
     {
         private readonly DockPanel m_dockPanel;
-        private readonly TextBlock m_label;
+        private readonly TextBlock m_textBlock;
         private readonly TextBox m_textBox;
 
         public FrameworkElement WindowsControl => m_dockPanel;
@@ -18,12 +18,12 @@ namespace ImGui.Wpf.Controls
         {
             m_dockPanel = new DockPanel();
 
-            m_label = new TextBlock();
+            m_textBlock = new TextBlock();
 
             m_textBox = new TextBox();
             m_textBox.TextChanged += OnTextChanged;
 
-            m_dockPanel.Children.Add(m_label);
+            m_dockPanel.Children.Add(m_textBlock);
             m_dockPanel.Children.Add(m_textBox);
         }
 
@@ -32,9 +32,14 @@ namespace ImGui.Wpf.Controls
             m_textBoxText = m_textBox.Text;
         }
 
-        public void Update(object[] data)
+        public void Update(IImGuiStyle style, object[] data)
         {
-            m_label.Text = (string) data[0];
+            m_textBlock.Padding = style.Padding;
+            m_textBlock.Margin = style.Margin;
+            m_textBox.Padding = style.Padding;
+            m_textBox.Margin = style.Margin;
+
+            m_textBlock.Text = (string) data[0];
 
             var inputText = (string)data[1];
             if (inputText == null || inputText.Equals(m_lastKnownText))
