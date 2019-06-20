@@ -1,5 +1,7 @@
 # ImGui.Wpf
 
+[![GitHub](https://img.shields.io/github/license/samoatesgames/imgui.wpf.svg?style=flat-square)](https://github.com/samoatesgames/imgui.wpf/blob/master/LICENSE)
+
 ## About
 
 ImGui.Wpf is a WPF implementation of an immediate mode graphical user interface. Other examples of ImGui implementations are things such as Unity3ds ImGui API and Dear ImGui.
@@ -20,7 +22,7 @@ My current plan it to get all the controls implemented and an API fleshed out. O
 
 ## Example
 
-![alt text](https://github.com/samoatesgames/ImGui.Wpf/master/Showcase/BasicDemo.png "Example Preview")
+![alt text](https://raw.githubusercontent.com/samoatesgames/ImGui.Wpf/master/Showcase/BasicDemo.png "Example Preview")
 
 ```csharp
 var sliderValue = 0.5;
