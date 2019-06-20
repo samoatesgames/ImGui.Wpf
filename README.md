@@ -20,6 +20,8 @@ My current plan it to get all the controls implemented and an API fleshed out. O
 
 ## Example
 
+![alt text](https://github.com/samoatesgames/ImGui.Wpf/master/Showcase/BasicDemo.png "Example Preview")
+
 ```csharp
 var sliderValue = 0.5;
 var buffer = "Hello World";
