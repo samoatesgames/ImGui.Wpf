@@ -18,6 +18,7 @@ namespace ImGui.Wpf.Example.Simple
         {
             var sliderValue = 0.5;
             var buffer = "Hello World";
+            var isChecked = false;
             
             using (var imGui = await ImGuiWpf.BeginPanel(owner))
             {
@@ -30,12 +31,19 @@ namespace ImGui.Wpf.Example.Simple
                     {
                         MessageBox.Show($"You clicked save!\n{buffer}");
                     }
+
+                    isChecked = await imGui.CheckBox("Check Me!", isChecked);
+                    if (isChecked)
+                    {
+                        await imGui.Label("You checked me!");
+                    }
+
                     buffer = await imGui.InputText("Input Text:", buffer);
                     sliderValue = await imGui.Slider("Slider:", sliderValue, 0.0, 1.0);
 
                     await imGui.EndFrame();
 
-                    await Task.Delay(100);
+                    await Task.Delay(20);
                 }
             }
         }

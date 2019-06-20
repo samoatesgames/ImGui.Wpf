@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\ImButton.cs" />
+    <Compile Include="Controls\ImCheckBox.cs" />
     <Compile Include="Controls\ImLabel.cs" />
     <Compile Include="Controls\ImSlider.cs" />
     <Compile Include="Controls\ImTextBlock.cs" />

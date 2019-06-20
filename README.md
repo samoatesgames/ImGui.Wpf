@@ -60,7 +60,7 @@ using (var imGui = await ImGuiWpf.BeginPanel())
 ## Implemented Controls
 
  * Button :white_check_mark:
- * CheckBox :x:
+ * CheckBox :white_check_mark:
  * ComboBox :x:
  * Label :white_check_mark:
  * ListBox :x:

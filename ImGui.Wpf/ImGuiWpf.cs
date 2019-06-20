@@ -47,6 +47,7 @@ namespace ImGui.Wpf
         private ImGuiWpf()
         {
             RegisterControl<ImButton>();
+            RegisterControl<ImCheckBox>();
             RegisterControl<ImLabel>();
             RegisterControl<ImSlider>();
             RegisterControl<ImTextBlock>();
@@ -184,6 +185,12 @@ namespace ImGui.Wpf
             return button.GetState<bool>("Clicked");
         }
 
+        public async Task<bool> CheckBox(string text, bool isChecked)
+        {
+            var checkBox = await HandleControl<ImCheckBox>(new object[] { text, isChecked });
+            return checkBox.GetState<bool?>("Checked") ?? false;
+        }
+
         public async Task<string> InputText(string title, string contents)
         {
             return await TextBox(title, contents);
@@ -214,6 +221,11 @@ namespace ImGui.Wpf
         {
             var textBox = await HandleControl<ImTextBox>(new object[] { title, contents });
             return textBox.GetState<string>("Text");
+        }
+
+        public async Task<bool> Toggle(string text, bool isChecked)
+        {
+            return await CheckBox(text, isChecked);
         }
     }
 }
