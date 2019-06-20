@@ -3,60 +3,113 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Markup;
 
 namespace ImGui.Wpf
 {
-    public static class ImGuiWpf
+    public static class TupleExtensions
     {
-        private static StackPanel s_activeOwner;
-
-        private static int s_controlId;
-        private static readonly Dictionary<int, FrameworkElement> s_idToControlMap = new Dictionary<int, FrameworkElement>();
-        private static readonly Dictionary<int, object> s_idToControlStateMap = new Dictionary<int, object>();
-
         public static void Deconstruct<T1, T2>(this Tuple<T1, T2> tuple, out T1 item1, out T2 item2)
         {
             item1 = tuple.Item1;
             item2 = tuple.Item2;
         }
 
-        public static async Task BeginFrame()
+        public static TControl FindChildOfType<TControl>(this Panel panel) where TControl : FrameworkElement
         {
-            s_controlId = 0;
+            foreach (var child in panel.Children)
+            {
+                if (child is TControl control)
+                {
+                    return control;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public class ImGuiWpf : IDisposable
+    {
+        private readonly Panel m_controlOwner;
+
+        private int m_controlId;
+        private readonly Dictionary<int, FrameworkElement> m_idToControlMap = new Dictionary<int, FrameworkElement>();
+        private readonly Dictionary<int, object> m_idToControlStateMap = new Dictionary<int, object>();
+        
+        private ImGuiWpf(Panel owner)
+        {
+            m_controlOwner = owner;
+        }
+
+        public static async Task<ImGuiWpf> BeginPanel(Panel owner)
+        {
+            await Task.CompletedTask;
+            return new ImGuiWpf(owner);
+        }
+
+        public static async Task<ImGuiWpf> BeginPanel()
+        {
+            return await BeginPanel(Application.Current.MainWindow);
+        }
+
+        public static async Task<ImGuiWpf> BeginPanel<TOwner>(TOwner owner) where TOwner : FrameworkElement, IAddChild
+        {
+            var panel = owner as Panel;
+            if (panel == null)
+            {
+                var frameworkElement = (FrameworkElement) owner;
+
+                StackPanel newPanel = null;
+                await frameworkElement.Dispatcher.InvokeAsync(() =>
+                {
+                    newPanel = new StackPanel();
+                    owner.AddChild(newPanel);
+                });
+
+                return await BeginPanel(newPanel);
+            }
+
+            return await BeginPanel(panel);
+        }
+
+        public async void Dispose()
+        {
+            await InvalidateTree(0);
+        }
+
+        public async Task BeginFrame()
+        {
+            m_controlId = 0;
             await Task.CompletedTask;
         }
 
-        public static async Task EndFrame()
+        public async Task EndFrame()
         {
-            await InvalidateTree(s_controlId);
+            await InvalidateTree(m_controlId);
         }
 
-        private static async Task InvalidateTree(int fromId)
+        private async Task InvalidateTree(int fromId)
         {
             var removedIds = new HashSet<int>();
-            while (s_idToControlMap.TryGetValue(fromId++, out var orphanedElement))
+            while (m_idToControlMap.TryGetValue(fromId++, out var orphanedElement))
             {
                 removedIds.Add(fromId - 1);
-                await s_activeOwner.Dispatcher.InvokeAsync(() =>
+                await m_controlOwner.Dispatcher.InvokeAsync(() =>
                 {
-                    s_activeOwner.Children.Remove(orphanedElement);
+                    m_controlOwner.Children.Remove(orphanedElement);
                 });
             }
 
             foreach (var id in removedIds)
             {
-                s_idToControlMap.Remove(id);
+                m_idToControlMap.Remove(id);
             }
         }
 
-        public static void SetOwner(StackPanel owner)
+        private async Task<Tuple<TControl, bool>> GetOrCreateControl<TControl>(int id) where TControl : FrameworkElement
         {
-            s_activeOwner = owner;
-        }
-
-        private static async Task<Tuple<TControl, bool>> GetOrCreateControl<TControl>(int id) where TControl : FrameworkElement
-        {
-            if (!s_idToControlMap.TryGetValue(id, out var existingControl))
+            if (!m_idToControlMap.TryGetValue(id, out var existingControl))
             {
                 return new Tuple<TControl, bool>(Activator.CreateInstance<TControl>(), true);
             }
@@ -70,9 +123,9 @@ namespace ImGui.Wpf
             return new Tuple<TControl, bool>((TControl)existingControl, false);
         }
 
-        private static TState GetControlState<TState>(int id, TState defaultState)
+        private TState GetControlState<TState>(int id, TState defaultState)
         {
-            if (!s_idToControlStateMap.TryGetValue(id, out var state))
+            if (!m_idToControlStateMap.TryGetValue(id, out var state))
             {
                 return defaultState;
             }
@@ -85,34 +138,35 @@ namespace ImGui.Wpf
             return (TState) state;
         }
 
-        public static async Task Text(string message, params object[] args)
+        public async Task Text(string message, params object[] args)
         {
-            var controlId = s_controlId++;
+            var controlId = m_controlId++;
             var formatted = string.Format(message, args);
 
-            await s_activeOwner.Dispatcher.InvokeAsync(async () =>
+            await m_controlOwner.Dispatcher.InvokeAsync(async () =>
             {
                 var (control, created) = await GetOrCreateControl<TextBlock>(controlId);
                 control.Text = formatted;
                 control.Margin = new Thickness(2);
                 control.Padding = new Thickness(2);
+                control.TextWrapping = TextWrapping.Wrap;
 
                 if (created)
                 {
-                    s_activeOwner.Children.Add(control);
+                    m_controlOwner.Children.Add(control);
                 }
 
-                s_idToControlMap[controlId] = control;
+                m_idToControlMap[controlId] = control;
             });
         }
 
-        public static async Task<bool> Button(string text)
+        public async Task<bool> Button(string text)
         {
-            var controlId = s_controlId++;
+            var controlId = m_controlId++;
 
             var state = GetControlState<bool?>(controlId, null);
 
-            await s_activeOwner.Dispatcher.InvokeAsync(async () =>
+            await m_controlOwner.Dispatcher.InvokeAsync(async () =>
             {
                 var (control, created) = await GetOrCreateControl<Button>(controlId);
                 control.Content = text;
@@ -121,34 +175,34 @@ namespace ImGui.Wpf
 
                 if (state != null)
                 {
-                    s_idToControlStateMap[controlId] = false;
+                    m_idToControlStateMap[controlId] = false;
                 }
 
                 if (created)
                 {
-                    control.Click += (s, e) => { s_idToControlStateMap[controlId] = true; };
-                    s_activeOwner.Children.Add(control);
+                    control.Click += (s, e) => { m_idToControlStateMap[controlId] = true; };
+                    m_controlOwner.Children.Add(control);
                 }
 
-                s_idToControlMap[controlId] = control;
+                m_idToControlMap[controlId] = control;
             });
 
             if (state == true)
             {
-                s_idToControlStateMap[controlId] = null;
+                m_idToControlStateMap[controlId] = null;
                 return true;
             }
 
             return state ?? false;
         }
 
-        public static async Task<string> InputText(string title, string contents)
+        public async Task<string> InputText(string title, string contents)
         {
-            var controlId = s_controlId++;
+            var controlId = m_controlId++;
 
             contents = GetControlState(controlId, contents);
 
-            await s_activeOwner.Dispatcher.InvokeAsync(async () =>
+            await m_controlOwner.Dispatcher.InvokeAsync(async () =>
             {
                 var (dock, createdDock) = await GetOrCreateControl<DockPanel>(controlId);
 
@@ -170,23 +224,23 @@ namespace ImGui.Wpf
                     };
                     dock.Children.Add(control);
 
-                    control.TextChanged += (s, e) => { s_idToControlStateMap[controlId] = control.Text; };
-                    s_activeOwner.Children.Add(dock);
+                    control.TextChanged += (s, e) => { m_idToControlStateMap[controlId] = control.Text; };
+                    m_controlOwner.Children.Add(dock);
                 }
 
-                s_idToControlMap[controlId] = dock;
+                m_idToControlMap[controlId] = dock;
             });
 
             return contents;
         }
 
-        public static async Task<double> Slider(string title, double value, double minValue, double maxValue)
+        public async Task<double> Slider(string title, double value, double minValue, double maxValue)
         {
-            var controlId = s_controlId++;
+            var controlId = m_controlId++;
 
             value = GetControlState(controlId, value);
 
-            await s_activeOwner.Dispatcher.InvokeAsync(async () =>
+            await m_controlOwner.Dispatcher.InvokeAsync(async () =>
             {
                 var (dock, createdDock) = await GetOrCreateControl<DockPanel>(controlId);
 
@@ -223,7 +277,7 @@ namespace ImGui.Wpf
 
                     slider.ValueChanged += (s, e) =>
                     {
-                        s_idToControlStateMap[controlId] = slider.Value;
+                        m_idToControlStateMap[controlId] = slider.Value;
                         editBox.Text = slider.Value.ToString("F");
                     };
 
@@ -236,10 +290,10 @@ namespace ImGui.Wpf
                         }
                     };
 
-                    s_activeOwner.Children.Add(dock);
+                    m_controlOwner.Children.Add(dock);
                 }
 
-                s_idToControlMap[controlId] = dock;
+                m_idToControlMap[controlId] = dock;
             });
 
             return value;

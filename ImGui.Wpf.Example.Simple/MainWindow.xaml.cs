@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace ImGui.Wpf.Example.Simple
 {
@@ -9,31 +10,54 @@ namespace ImGui.Wpf.Example.Simple
         {
             InitializeComponent();
 
-            Task.Run(async () => await UpdateImGui());
+            Task.Run(async () => await UpdateImDemo(LeftGroup));
+            Task.Run(async () => await UpdateImAbout(RightGroup));
         }
 
-        private async Task UpdateImGui()
+        private async Task UpdateImDemo(GroupBox owner)
         {
-            ImGuiWpf.SetOwner(RootPanel);
-
-            var buffer = "Quick Brown Fox";
             var sliderValue = 0.5;
-
-            while (true)
+            var buffer = "Hello World";
+            
+            using (var imGui = await ImGuiWpf.BeginPanel(owner))
             {
-                await ImGuiWpf.BeginFrame();
-
-                await ImGuiWpf.Text("Hello World {0}", 123);
-                if (await ImGuiWpf.Button("Save"))
+                while (true)
                 {
-                    MessageBox.Show($"You clicked save!\n{buffer}");
+                    await imGui.BeginFrame();
+
+                    await imGui.Text("Hello World {0}", 123);
+                    if (await imGui.Button("Save"))
+                    {
+                        MessageBox.Show($"You clicked save!\n{buffer}");
+                    }
+                    buffer = await imGui.InputText("Input Text:", buffer);
+                    sliderValue = await imGui.Slider("Slider:", sliderValue, 0.0, 1.0);
+
+                    await imGui.EndFrame();
+
+                    await Task.Delay(100);
                 }
-                buffer = await ImGuiWpf.InputText("Input Text:", buffer);
-                sliderValue = await ImGuiWpf.Slider("Slider:", sliderValue, 0.0, 1.0);
+            }
+        }
 
-                await ImGuiWpf.EndFrame();
+        private async Task UpdateImAbout(GroupBox owner)
+        {
+            using (var imGui = await ImGuiWpf.BeginPanel(owner))
+            {
+                while (true)
+                {
+                    await imGui.BeginFrame();
 
-                await Task.Delay(100);
+                    await imGui.Text("This is a simple example of using ImGui.Wpf" +
+                                     "The idea of this library is to implement an immediate mode " +
+                                     "Gui system usable in WPF." +
+                                     "The primary use for this library is to enable runtime script " +
+                                     "execution to also implement Gui's.");
+
+                    await imGui.EndFrame();
+
+                    await Task.Delay(100);
+                }
             }
         }
     }

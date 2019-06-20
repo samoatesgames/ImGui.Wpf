@@ -4,6 +4,17 @@
         Title="ImGui.Wpf - Simple Example" 
         Width="800" Height="450">
 
-    <StackPanel Name="RootPanel" Margin="4" />
+    <Grid Margin="8">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Name="LeftGroup" Header="Demo" Grid.Column="0" />
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="5" />
+        <GroupBox Name="RightGroup" Header="About" Grid.Column="2" />
+
+    </Grid>
 
 </Window>
