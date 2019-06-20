@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Tests", "2 - Tests", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImGui.Wpf.Example.Simple", "ImGui.Wpf.Example.Simple\ImGui.Wpf.Example.Simple.csproj", "{BFF73B8D-5689-49CB-9F53-A72553C13D3C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImGui.Wpf.Demo", "ImGui.Wpf.Demo\ImGui.Wpf.Demo.csproj", "{1FDE8ABA-43D3-4B87-BF27-8011821FBB20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,12 +27,17 @@ Global
 		{BFF73B8D-5689-49CB-9F53-A72553C13D3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFF73B8D-5689-49CB-9F53-A72553C13D3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFF73B8D-5689-49CB-9F53-A72553C13D3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FDE8ABA-43D3-4B87-BF27-8011821FBB20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FDE8ABA-43D3-4B87-BF27-8011821FBB20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FDE8ABA-43D3-4B87-BF27-8011821FBB20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FDE8ABA-43D3-4B87-BF27-8011821FBB20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BFF73B8D-5689-49CB-9F53-A72553C13D3C} = {ABC99E21-4ECA-4FAE-AC89-FA7E8032FDDB}
+		{1FDE8ABA-43D3-4B87-BF27-8011821FBB20} = {ABC99E21-4ECA-4FAE-AC89-FA7E8032FDDB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {32457ED1-AE48-4107-B858-F8BE3C297954}

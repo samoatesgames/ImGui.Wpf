@@ -1,0 +1,48 @@
+﻿<mui:ModernWindow x:Class="ImGui.Wpf.Demo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:demo="clr-namespace:ImGui.Wpf.Demo"
+        Style="{StaticResource BlankWindow}"
+        WindowStartupLocation="CenterScreen"
+        Title="ImGui.Wpf Demo" Height="720" Width="1280">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="70*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="30*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
+
+            <avalonEdit:TextEditor
+                xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                SyntaxHighlighting="C#"
+                FontFamily="Consolas"
+                FontSize="10pt" 
+                HorizontalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Auto"
+                Margin="2"
+                Grid.Row="0" 
+                >
+                <i:Interaction.Behaviors>
+                    <demo:AvalonEditBehaviour EditorText="{Binding Script, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </i:Interaction.Behaviors>
+            </avalonEdit:TextEditor>
+
+            <Button Margin="2" Grid.Row="1" Content="Update" Command="{Binding UpdateScript}" />
+        </Grid>
+
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+
+        <StackPanel Grid.Column="2" Name="PreviewPanel" />
+
+    </Grid>
+
+</mui:ModernWindow>
