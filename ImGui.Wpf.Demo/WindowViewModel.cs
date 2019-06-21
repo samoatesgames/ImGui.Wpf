@@ -95,7 +95,7 @@ namespace ImGui.Wpf.Demo
 
                     await imGui.EndFrame();
 
-                    await Task.Delay(100);
+                    await Task.Delay(17);
                 }
             }
         }
