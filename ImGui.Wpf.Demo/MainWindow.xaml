@@ -30,13 +30,17 @@
                 VerticalScrollBarVisibility="Auto"
                 Margin="2"
                 Grid.Row="0" 
+                ShowLineNumbers="True"
                 >
                 <i:Interaction.Behaviors>
                     <demo:AvalonEditBehaviour EditorText="{Binding Script, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </i:Interaction.Behaviors>
             </avalonEdit:TextEditor>
 
-            <Button Margin="2" Grid.Row="1" Content="Update" Command="{Binding UpdateScript}" />
+            <TextBlock Margin="2" Grid.Row="1" 
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Text="{Binding Status}" />
         </Grid>
 
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />

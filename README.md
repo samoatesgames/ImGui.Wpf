@@ -69,7 +69,7 @@ using (var imGui = await ImGuiWpf.BeginPanel())
  * Label :white_check_mark:
  * ListBox :white_check_mark:
  * ProgressBar :white_check_mark:
- * RadioButton :x:
+ * RadioButton :white_check_mark:
  * Slider :white_check_mark:
  * TextBlock :white_check_mark:
  * TextBox :white_check_mark:

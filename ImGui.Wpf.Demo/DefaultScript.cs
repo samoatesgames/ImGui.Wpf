@@ -44,5 +44,10 @@ public class Demo : IGuiScript
         m_isChecked = await imGui.ToggleButton("Toggle Me", m_isChecked);
 
         m_selectedFruit = await imGui.ListBox("Fruit:", m_selectedFruit, m_fruit);
+
+        m_isChecked = await imGui.RadioButton("Radio Checked", m_isChecked);
+        m_isChecked = !await imGui.RadioButton("Radio UnChecked", !m_isChecked);
+
+        await imGui.ProgressBar(m_sliderValue, 0.0, 1.0);
     }
 }

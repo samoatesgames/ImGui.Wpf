@@ -18,6 +18,7 @@ namespace ImGui.Wpf.Demo
         private readonly StackPanel m_previewPanel;
 
         private string m_script;
+        private string m_status;
         private IGuiScript m_activeScript;
 
         public string Script
@@ -27,10 +28,19 @@ namespace ImGui.Wpf.Demo
             {
                 m_script = value;
                 OnPropertyChanged();
+                Task.Run(async () => await ReloadScript());
             }
         }
 
-        public ICommand UpdateScript { get; }
+        public string Status
+        {
+            get => m_status;
+            set
+            {
+                m_status = value;
+                OnPropertyChanged();
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -42,22 +52,20 @@ namespace ImGui.Wpf.Demo
 
         public WindowViewModel(StackPanel previewPanel)
         {
-            UpdateScript = new ActionCommand(_ =>
-            {
-                m_activeScript = null;
-                Task.Run(async () => await ReloadScript());
-            });
-
             m_previewPanel = previewPanel;
+            Status = "Loading...";
 
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "ImGui.Wpf.Demo.DefaultScript.cs";
 
             using (var stream = assembly.GetManifestResourceStream(resourceName))
             {
-                using (StreamReader reader = new StreamReader(stream))
+                if (stream != null)
                 {
-                    Script = reader.ReadToEnd();
+                    using (var reader = new StreamReader(stream))
+                    {
+                        Script = reader.ReadToEnd();
+                    }
                 }
             }
 
@@ -67,14 +75,17 @@ namespace ImGui.Wpf.Demo
 
         private async Task ReloadScript()
         {
+            Status = "Compiling...";
             try
             {
                 m_activeScript = await CSScript.Evaluator
                     .LoadCodeAsync<IGuiScript>(Script);
+                Status = "Loaded.";
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 m_activeScript = null;
+                Status = $"Compile Error: {e.Message}";
             }
         }
 

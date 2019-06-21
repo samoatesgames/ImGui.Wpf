@@ -54,6 +54,7 @@ namespace ImGui.Wpf
             RegisterControl<ImLabel>();
             RegisterControl<ImListBox>();
             RegisterControl<ImProgressBar>();
+            RegisterControl<ImRadioButton>();
             RegisterControl<ImSlider>();
             RegisterControl<ImTextBlock>();
             RegisterControl<ImTextBox>();
@@ -224,6 +225,12 @@ namespace ImGui.Wpf
         public async Task ProgressBar(double value, double minimum, double maximum)
         {
             await HandleControl<ImProgressBar>(new object[] { value, minimum, maximum });
+        }
+
+        public async Task<bool> RadioButton(string title, bool isChecked)
+        {
+            var radioButton = await HandleControl<ImRadioButton>(new object[] { title, isChecked });
+            return radioButton.GetState<bool>("Checked");
         }
 
         public async Task<double> Slider(string title, double value, double minimum, double maximum)

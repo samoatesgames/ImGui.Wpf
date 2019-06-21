@@ -50,6 +50,9 @@ namespace ImGui.Wpf.Example.Simple
 
                     comboSelected = await imGui.ListBox("Fruit:", comboSelected, fruit);
 
+                    isChecked = await imGui.RadioButton("Radio Checked", isChecked);
+                    isChecked = !await imGui.RadioButton("Radio UnChecked", !isChecked);
+
                     await imGui.ProgressBar(sliderValue, 0.0, 1.0);
                     
                     await imGui.EndFrame();

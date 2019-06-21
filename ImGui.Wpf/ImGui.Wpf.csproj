@@ -51,6 +51,7 @@
     <Compile Include="Controls\ImLabel.cs" />
     <Compile Include="Controls\ImListBox.cs" />
     <Compile Include="Controls\ImProgressBar.cs" />
+    <Compile Include="Controls\ImRadioButton.cs" />
     <Compile Include="Controls\ImSlider.cs" />
     <Compile Include="Controls\ImTextBlock.cs" />
     <Compile Include="Controls\ImTextBox.cs" />
