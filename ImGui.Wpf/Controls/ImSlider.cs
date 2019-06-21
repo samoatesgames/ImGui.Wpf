@@ -24,7 +24,10 @@ namespace ImGui.Wpf.Controls
             m_slider = new Slider();
             m_slider.ValueChanged += OnValueChanged;
 
-            m_editBox = new TextBox();
+            m_editBox = new TextBox
+            {
+                VerticalContentAlignment = VerticalAlignment.Center
+            };
             m_editBox.TextChanged += OnTextChanged;
 
             DockPanel.SetDock(m_label, Dock.Left);
@@ -50,15 +53,8 @@ namespace ImGui.Wpf.Controls
             m_editBox.Text = m_sliderValue.ToString("F");
         }
 
-        public void Update(IImGuiStyle style, object[] data)
+        public void Update(object[] data)
         {
-            m_label.Padding = style.Padding;
-            m_label.Margin = style.Margin;
-            m_slider.Padding = style.Padding;
-            m_slider.Margin = style.Margin;
-            m_editBox.Padding = style.Padding;
-            m_editBox.Margin = style.Margin;
-
             m_label.Text = (string)data[0];
 
             var value = (double)data[1];
@@ -76,6 +72,16 @@ namespace ImGui.Wpf.Controls
             m_lastKnownValue = m_sliderValue = value;
             m_slider.Value = m_sliderValue;
             m_editBox.Text = m_sliderValue.ToString("F");
+        }
+
+        public void ApplyStyle(IImGuiStyle style)
+        {
+            m_label.Padding = style.Padding;
+            m_label.Margin = style.Margin;
+            m_slider.Padding = style.Padding;
+            m_slider.Margin = style.Margin;
+            m_editBox.Padding = style.Padding;
+            m_editBox.Margin = style.Margin;
         }
 
         public TResult GetState<TResult>(string stateName)

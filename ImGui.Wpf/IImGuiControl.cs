@@ -6,7 +6,10 @@ namespace ImGui.Wpf
     {
         FrameworkElement WindowsControl { get; }
 
-        void Update(IImGuiStyle style, object[] data);
+        void Update(object[] data);
+
+        void ApplyStyle(IImGuiStyle style);
+
         TResult GetState<TResult>(string stateName);
     }
 }

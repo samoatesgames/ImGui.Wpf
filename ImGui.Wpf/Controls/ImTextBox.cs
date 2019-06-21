@@ -32,13 +32,8 @@ namespace ImGui.Wpf.Controls
             m_textBoxText = m_textBox.Text;
         }
 
-        public void Update(IImGuiStyle style, object[] data)
+        public void Update(object[] data)
         {
-            m_textBlock.Padding = style.Padding;
-            m_textBlock.Margin = style.Margin;
-            m_textBox.Padding = style.Padding;
-            m_textBox.Margin = style.Margin;
-
             m_textBlock.Text = (string) data[0];
 
             var inputText = (string)data[1];
@@ -49,6 +44,14 @@ namespace ImGui.Wpf.Controls
 
             m_lastKnownText = m_textBoxText = inputText;
             m_textBox.Text = m_textBoxText;
+        }
+
+        public void ApplyStyle(IImGuiStyle style)
+        {
+            m_textBlock.Padding = style.Padding;
+            m_textBlock.Margin = style.Margin;
+            m_textBox.Padding = style.Padding;
+            m_textBox.Margin = style.Margin;
         }
 
         public TResult GetState<TResult>(string stateName)

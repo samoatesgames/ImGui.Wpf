@@ -15,7 +15,8 @@ namespace ImGui.Wpf.Controls
         {
             m_checkBox = new CheckBox
             {
-                IsThreeState = false
+                IsThreeState = false,
+                VerticalContentAlignment = VerticalAlignment.Center
             };
 
             m_checkBox.Checked += OnChecked;
@@ -32,11 +33,8 @@ namespace ImGui.Wpf.Controls
             m_isChecked = true;
         }
 
-        public void Update(IImGuiStyle style, object[] data)
+        public void Update(object[] data)
         {
-            m_checkBox.Padding = style.Padding;
-            m_checkBox.Margin = style.Margin;
-
             m_checkBox.Content = (string)data[0];
 
             var checkState = (bool?) data[1];
@@ -47,6 +45,12 @@ namespace ImGui.Wpf.Controls
 
             m_lastKnownChecked = m_isChecked = checkState;
             m_checkBox.IsChecked = m_isChecked;
+        }
+
+        public void ApplyStyle(IImGuiStyle style)
+        {
+            m_checkBox.Padding = style.Padding;
+            m_checkBox.Margin = style.Margin;
         }
 
         public TResult GetState<TResult>(string stateName)

@@ -173,7 +173,9 @@ namespace ImGui.Wpf
                     control = factory.CreateNew();
                     m_controlOwner.Children.Add(control.WindowsControl);
                 }
-                control.Update(m_style, data);
+
+                control.ApplyStyle(m_style);
+                control.Update(data);
 
                 m_idToControlMap[controlId] = control;
             });

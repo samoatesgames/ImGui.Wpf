@@ -16,12 +16,15 @@ namespace ImGui.Wpf.Controls
             };
         }
 
-        public void Update(IImGuiStyle style, object[] data)
+        public void Update(object[] data)
+        {
+            m_textBlock.Text = string.Format((string)data[0], (object[])data[1]);
+        }
+
+        public void ApplyStyle(IImGuiStyle style)
         {
             m_textBlock.Padding = style.Padding;
             m_textBlock.Margin = style.Margin;
-
-            m_textBlock.Text = string.Format((string)data[0], (object[])data[1]);
         }
 
         public TResult GetState<TResult>(string stateName)

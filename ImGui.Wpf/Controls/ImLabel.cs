@@ -13,12 +13,15 @@ namespace ImGui.Wpf.Controls
             m_label = new Label();
         }
 
-        public void Update(IImGuiStyle style, object[] data)
+        public void Update(object[] data)
+        {
+            m_label.Content = string.Format((string)data[0], (object[])data[1]);
+        }
+
+        public void ApplyStyle(IImGuiStyle style)
         {
             m_label.Padding = style.Padding;
             m_label.Margin = style.Margin;
-
-            m_label.Content = string.Format((string)data[0], (object[])data[1]);
         }
 
         public TResult GetState<TResult>(string stateName)
