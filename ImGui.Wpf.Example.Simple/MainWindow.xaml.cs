@@ -41,6 +41,8 @@ namespace ImGui.Wpf.Example.Simple
                     buffer = await imGui.InputText("Input Text:", buffer);
                     sliderValue = await imGui.Slider("Slider:", sliderValue, 0.0, 1.0);
 
+                    isChecked = await imGui.ToggleButton("Toggle Me", isChecked);
+
                     await imGui.EndFrame();
 
                     await Task.Delay(20);

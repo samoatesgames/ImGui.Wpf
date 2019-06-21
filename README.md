@@ -73,7 +73,7 @@ using (var imGui = await ImGuiWpf.BeginPanel())
  * Slider :white_check_mark:
  * TextBlock :white_check_mark:
  * TextBox :white_check_mark:
- * ToggleButton :x:
+ * ToggleButton :white_check_mark:
 
 ## Additional Features
 

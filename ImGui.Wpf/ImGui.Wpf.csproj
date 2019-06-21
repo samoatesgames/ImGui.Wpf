@@ -51,6 +51,7 @@
     <Compile Include="Controls\ImSlider.cs" />
     <Compile Include="Controls\ImTextBlock.cs" />
     <Compile Include="Controls\ImTextBox.cs" />
+    <Compile Include="Controls\ImToggleButton.cs" />
     <Compile Include="Styles\DefaultStyle.cs" />
     <Compile Include="Factories\ImGenericFactory.cs" />
     <Compile Include="IImGuiControl.cs" />

@@ -54,6 +54,7 @@ namespace ImGui.Wpf
             RegisterControl<ImSlider>();
             RegisterControl<ImTextBlock>();
             RegisterControl<ImTextBox>();
+            RegisterControl<ImToggleButton>();
         }
 
         private ImGuiWpf(Panel owner) : this()
@@ -230,6 +231,12 @@ namespace ImGui.Wpf
         public async Task<bool> Toggle(string text, bool isChecked)
         {
             return await CheckBox(text, isChecked);
+        }
+
+        public async Task<bool> ToggleButton(string text, bool isChecked)
+        {
+            var toggleButton = await HandleControl<ImToggleButton>(new object[] { text, isChecked });
+            return toggleButton.GetState<bool>("Checked");
         }
     }
 }
