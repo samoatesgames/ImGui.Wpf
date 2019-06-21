@@ -53,6 +53,7 @@ namespace ImGui.Wpf
             RegisterControl<ImComboBox>();
             RegisterControl<ImLabel>();
             RegisterControl<ImListBox>();
+            RegisterControl<ImProgressBar>();
             RegisterControl<ImSlider>();
             RegisterControl<ImTextBlock>();
             RegisterControl<ImTextBox>();
@@ -218,6 +219,11 @@ namespace ImGui.Wpf
         {
             var listBox = await HandleControl<ImListBox>(new object[] { title, selected, items });
             return listBox.GetState<TType>("Selected");
+        }
+
+        public async Task ProgressBar(double value, double minimum, double maximum)
+        {
+            await HandleControl<ImProgressBar>(new object[] { value, minimum, maximum });
         }
 
         public async Task<double> Slider(string title, double value, double minimum, double maximum)

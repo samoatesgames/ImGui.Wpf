@@ -21,7 +21,7 @@ namespace ImGui.Wpf.Example.Simple
             var isChecked = false;
 
             var fruit = new[] {"Apple", "Banana", "Tomato"};
-            var comboSelected = fruit[0];
+            var comboSelected = fruit[1];
 
             using (var imGui = await ImGuiWpf.BeginPanel(owner))
             {
@@ -50,6 +50,8 @@ namespace ImGui.Wpf.Example.Simple
 
                     comboSelected = await imGui.ListBox("Fruit:", comboSelected, fruit);
 
+                    await imGui.ProgressBar(sliderValue, 0.0, 1.0);
+                    
                     await imGui.EndFrame();
 
                     await Task.Delay(20);
