@@ -19,7 +19,10 @@ namespace ImGui.Wpf.Example.Simple
             var sliderValue = 0.5;
             var buffer = "Hello World";
             var isChecked = false;
-            
+
+            var fruit = new[] {"Apple", "Banana", "Tomato"};
+            var comboSelected = fruit[0];
+
             using (var imGui = await ImGuiWpf.BeginPanel(owner))
             {
                 while (true)
@@ -42,6 +45,8 @@ namespace ImGui.Wpf.Example.Simple
                     sliderValue = await imGui.Slider("Slider:", sliderValue, 0.0, 1.0);
 
                     isChecked = await imGui.ToggleButton("Toggle Me", isChecked);
+
+                    comboSelected = await imGui.ComboBox("Fruit:", comboSelected, fruit);
 
                     await imGui.EndFrame();
 

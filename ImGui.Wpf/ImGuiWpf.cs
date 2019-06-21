@@ -50,6 +50,7 @@ namespace ImGui.Wpf
         {
             RegisterControl<ImButton>();
             RegisterControl<ImCheckBox>();
+            RegisterControl<ImComboBox>();
             RegisterControl<ImLabel>();
             RegisterControl<ImSlider>();
             RegisterControl<ImTextBlock>();
@@ -188,6 +189,12 @@ namespace ImGui.Wpf
         {
             var button = await HandleControl<ImButton>(new object[] { text });
             return button.GetState<bool>("Clicked");
+        }
+
+        public async Task<TType> ComboBox<TType>(string title, TType selected, params TType[] items)
+        {
+            var comboBox = await HandleControl<ImComboBox>(new object[] { title, selected, items });
+            return comboBox.GetState<TType>("Selected");
         }
 
         public async Task<bool> CheckBox(string text, bool isChecked)
