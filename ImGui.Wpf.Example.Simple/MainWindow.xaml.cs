@@ -29,7 +29,7 @@ namespace ImGui.Wpf.Example.Simple
                 {
                     await imGui.BeginFrame();
 
-                    await imGui.Text("Hello World {0}", 123);
+                    await imGui.Text("Hello World {0:F}", sliderValue);
                     if (await imGui.Button("Save"))
                     {
                         MessageBox.Show($"You clicked save!\n{buffer}");
@@ -41,12 +41,14 @@ namespace ImGui.Wpf.Example.Simple
                         await imGui.Label("You checked me!");
                     }
 
+                    comboSelected = await imGui.ComboBox("Fruit:", comboSelected, fruit);
+
                     buffer = await imGui.InputText("Input Text:", buffer);
                     sliderValue = await imGui.Slider("Slider:", sliderValue, 0.0, 1.0);
 
                     isChecked = await imGui.ToggleButton("Toggle Me", isChecked);
 
-                    comboSelected = await imGui.ComboBox("Fruit:", comboSelected, fruit);
+                    comboSelected = await imGui.ListBox("Fruit:", comboSelected, fruit);
 
                     await imGui.EndFrame();
 

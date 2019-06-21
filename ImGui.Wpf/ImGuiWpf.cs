@@ -52,6 +52,7 @@ namespace ImGui.Wpf
             RegisterControl<ImCheckBox>();
             RegisterControl<ImComboBox>();
             RegisterControl<ImLabel>();
+            RegisterControl<ImListBox>();
             RegisterControl<ImSlider>();
             RegisterControl<ImTextBlock>();
             RegisterControl<ImTextBox>();
@@ -211,6 +212,12 @@ namespace ImGui.Wpf
         public async Task Label(string message, params object[] args)
         {
             await HandleControl<ImLabel>(new object[] { message, args });
+        }
+
+        public async Task<TType> ListBox<TType>(string title, TType selected, params TType[] items)
+        {
+            var listBox = await HandleControl<ImListBox>(new object[] { title, selected, items });
+            return listBox.GetState<TType>("Selected");
         }
 
         public async Task<double> Slider(string title, double value, double minimum, double maximum)
