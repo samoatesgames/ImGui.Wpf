@@ -93,7 +93,7 @@ namespace ImGui.Wpf.Demo
         {
             await ReloadScript();
 
-            using (var imGui = await ImGuiWpf.BeginPanel(m_previewPanel))
+            using (var imGui = await ImGuiWpf.BeginUi(m_previewPanel))
             {
                 while (true)
                 {

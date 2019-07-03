@@ -56,6 +56,9 @@
     <Compile Include="Controls\ImTextBlock.cs" />
     <Compile Include="Controls\ImTextBox.cs" />
     <Compile Include="Controls\ImToggleButton.cs" />
+    <Compile Include="Layouts\ImHorizontalLayout.cs" />
+    <Compile Include="Layouts\ImLayout.cs" />
+    <Compile Include="Layouts\ImVerticalLayout.cs" />
     <Compile Include="Styles\DefaultStyle.cs" />
     <Compile Include="Factories\ImGenericFactory.cs" />
     <Compile Include="IImGuiControl.cs" />

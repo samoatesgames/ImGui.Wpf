@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using ImGui.Wpf.Controls;
+using ImGui.Wpf.Layouts;
 using ImGui.Wpf.Styles;
 
 namespace ImGui.Wpf
@@ -46,6 +47,8 @@ namespace ImGui.Wpf
         private readonly Dictionary<int, IImGuiControl> m_idToControlMap = new Dictionary<int, IImGuiControl>();
         private readonly Dictionary<Type, IImGuiControlFactory> m_controlFactories = new Dictionary<Type, IImGuiControlFactory>();
 
+        private readonly Stack<ImLayout> m_layoutStack = new Stack<ImLayout>();
+
         private ImGuiWpf()
         {
             RegisterControl<ImButton>();
@@ -76,18 +79,18 @@ namespace ImGui.Wpf
             m_controlFactories[typeof(TControl)] = new ImGenericFactory<TControl>();
         }
 
-        public static async Task<ImGuiWpf> BeginPanel(Panel owner)
+        public static async Task<ImGuiWpf> BeginUi(Panel owner)
         {
             await Task.CompletedTask;
             return new ImGuiWpf(owner);
         }
 
-        public static async Task<ImGuiWpf> BeginPanel()
+        public static async Task<ImGuiWpf> BeginUi()
         {
-            return await BeginPanel(Application.Current.MainWindow);
+            return await BeginUi(Application.Current.MainWindow);
         }
 
-        public static async Task<ImGuiWpf> BeginPanel<TOwner>(TOwner owner) where TOwner : FrameworkElement, IAddChild
+        public static async Task<ImGuiWpf> BeginUi<TOwner>(TOwner owner) where TOwner : FrameworkElement, IAddChild
         {
             var panel = owner as Panel;
             if (panel == null)
@@ -101,10 +104,10 @@ namespace ImGui.Wpf
                     owner.AddChild(newPanel);
                 });
 
-                return await BeginPanel(newPanel);
+                return await BeginUi(newPanel);
             }
 
-            return await BeginPanel(panel);
+            return await BeginUi(panel);
         }
 
         public async void Dispose()
@@ -133,7 +136,18 @@ namespace ImGui.Wpf
                 var controlToRemove = orphanedElement.WindowsControl;
                 await m_controlOwner.Dispatcher.InvokeAsync(() =>
                 {
-                    m_controlOwner.Children.Remove(controlToRemove);
+                    if (controlToRemove.Parent is Panel parent)
+                    {
+                        parent.Children.Remove(controlToRemove);
+
+                        var panel = parent;
+                        while (panel?.Children.Count == 0)
+                        {
+                            parent = panel.Parent as Panel;
+                            parent?.Children.Remove(panel);
+                            panel = parent;
+                        }
+                    }
                 });
             }
 
@@ -142,7 +156,7 @@ namespace ImGui.Wpf
                 m_idToControlMap.Remove(id);
             }
         }
-        
+
         private bool TryGetExistingControl<TControl>(int id, out IImGuiControl control)
         {
             if (!m_idToControlMap.TryGetValue(id, out var existingControl))
@@ -161,6 +175,49 @@ namespace ImGui.Wpf
             return true;
         }
 
+        // Layout
+
+        private void PopLayout()
+        {
+            m_layoutStack.Pop();
+        }
+
+        public async Task<ImLayout> BeginHorizontal()
+        {
+            ImLayout newLayout = null;
+
+            await m_controlOwner.Dispatcher.InvokeAsync(() =>
+            {
+                newLayout = new ImHorizontalLayout(PopLayout);
+
+                var owner = m_layoutStack.Count == 0 ? m_controlOwner : m_layoutStack.Peek().Panel;
+                owner.Children.Add(newLayout.Panel);
+
+                m_layoutStack.Push(newLayout);
+            });
+
+            return newLayout;
+        }
+
+        public async Task<ImLayout> BeginVertical()
+        {
+            ImLayout newLayout = null;
+
+            await m_controlOwner.Dispatcher.InvokeAsync(() =>
+            {
+                newLayout = new ImVerticalLayout(PopLayout);
+
+                var owner = m_layoutStack.Count == 0 ? m_controlOwner : m_layoutStack.Peek().Panel;
+                owner.Children.Add(newLayout.Panel);
+
+                m_layoutStack.Push(newLayout);
+            });
+
+            return newLayout;
+        }
+
+        // Controls
+
         private async Task<TControl> HandleControl<TControl>(object[] data) where TControl : IImGuiControl
         {
             var factory = m_controlFactories[typeof(TControl)];
@@ -176,7 +233,9 @@ namespace ImGui.Wpf
                 if (control == null)
                 {
                     control = factory.CreateNew();
-                    m_controlOwner.Children.Add(control.WindowsControl);
+
+                    var owner = m_layoutStack.Count == 0 ? m_controlOwner : m_layoutStack.Peek().Panel;
+                    owner.Children.Add(control.WindowsControl);
                 }
 
                 control.ApplyStyle(m_style);

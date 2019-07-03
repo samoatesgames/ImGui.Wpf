@@ -23,7 +23,7 @@ namespace ImGui.Wpf.Example.Simple
             var fruit = new[] {"Apple", "Banana", "Tomato"};
             var comboSelected = fruit[1];
 
-            using (var imGui = await ImGuiWpf.BeginPanel(owner))
+            using (var imGui = await ImGuiWpf.BeginUi(owner))
             {
                 while (true)
                 {
@@ -54,7 +54,56 @@ namespace ImGui.Wpf.Example.Simple
                     isChecked = !await imGui.RadioButton("Radio UnChecked", !isChecked);
 
                     await imGui.ProgressBar(sliderValue, 0.0, 1.0);
-                    
+
+                    using (await imGui.BeginHorizontal())
+                    {
+                        if (await imGui.Button("Left"))
+                        {
+                            MessageBox.Show("You clicked left.");
+                        }
+
+                        if (await imGui.Button("Right"))
+                        {
+                            MessageBox.Show("You clicked right.");
+                        }
+
+                        using (await imGui.BeginVertical())
+                        {
+                            if (await imGui.Button("A"))
+                            {
+                                MessageBox.Show("You clicked A.");
+                            }
+
+                            if (await imGui.Button("B"))
+                            {
+                                MessageBox.Show("You clicked B.");
+                            }
+
+                            if (await imGui.Button("C"))
+                            {
+                                MessageBox.Show("You clicked C.");
+                            }
+                        }
+
+                        using (await imGui.BeginHorizontal())
+                        {
+                            if (await imGui.Button("1"))
+                            {
+                                MessageBox.Show("You clicked 1.");
+                            }
+
+                            if (await imGui.Button("2"))
+                            {
+                                MessageBox.Show("You clicked 2.");
+                            }
+
+                            if (await imGui.Button("3"))
+                            {
+                                MessageBox.Show("You clicked 3.");
+                            }
+                        }
+                    }
+
                     await imGui.EndFrame();
 
                     await Task.Delay(20);
@@ -64,7 +113,7 @@ namespace ImGui.Wpf.Example.Simple
 
         private async Task UpdateImAbout(GroupBox owner)
         {
-            using (var imGui = await ImGuiWpf.BeginPanel(owner))
+            using (var imGui = await ImGuiWpf.BeginUi(owner))
             {
                 while (true)
                 {
