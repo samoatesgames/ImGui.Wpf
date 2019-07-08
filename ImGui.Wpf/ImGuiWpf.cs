@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using System.Windows.Media;
 using ImGui.Wpf.Controls;
 using ImGui.Wpf.Layouts;
 using ImGui.Wpf.Styles;
@@ -55,6 +56,7 @@ namespace ImGui.Wpf
             RegisterControl<ImCheckBox>();
             RegisterControl<ImComboBox>();
             RegisterControl<ImLabel>();
+            RegisterControl<ImImage>();
             RegisterControl<ImListBox>();
             RegisterControl<ImProgressBar>();
             RegisterControl<ImRadioButton>();
@@ -263,6 +265,16 @@ namespace ImGui.Wpf
         {
             var checkBox = await HandleControl<ImCheckBox>(new object[] { text, isChecked });
             return checkBox.GetState<bool?>("Checked") ?? false;
+        }
+
+        public async Task Image(string imagePath)
+        {
+            await HandleControl<ImImage>(new object[] { imagePath });
+        }
+
+        public async Task Image(ImageSource imageSource)
+        {
+            await HandleControl<ImImage>(new object[] { imageSource });
         }
 
         public async Task<string> InputText(string title, string contents)

@@ -7,9 +7,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Threading;
-using Microsoft.Expression.Interactivity.Core;
 
 namespace ImGui.Wpf.Demo
 {
@@ -101,7 +99,14 @@ namespace ImGui.Wpf.Demo
 
                     if (m_activeScript != null)
                     {
-                        await m_activeScript.OnGui(dispatcher, imGui);
+                        try
+                        {
+                            await m_activeScript.OnGui(dispatcher, imGui);
+                        }
+                        catch (Exception e)
+                        {
+                            Status = $"Runtime Exception: {e.Message}";
+                        }
                     }
 
                     await imGui.EndFrame();

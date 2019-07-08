@@ -48,6 +48,7 @@
     <Compile Include="Controls\ImButton.cs" />
     <Compile Include="Controls\ImCheckBox.cs" />
     <Compile Include="Controls\ImComboBox.cs" />
+    <Compile Include="Controls\ImImage.cs" />
     <Compile Include="Controls\ImLabel.cs" />
     <Compile Include="Controls\ImListBox.cs" />
     <Compile Include="Controls\ImProgressBar.cs" />
