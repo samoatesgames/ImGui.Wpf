@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using ImGui.Wpf.Example.Simple.CustomControl;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -33,6 +34,11 @@ namespace ImGui.Wpf.Example.Simple
                     if (await imGui.Button("Save"))
                     {
                         MessageBox.Show($"You clicked save!\n{buffer}");
+                    }
+
+                    if (await imGui.ExampleCustomControl("I'm a custom control"))
+                    {
+                        MessageBox.Show($"All my code lives within the applications assembly, yet you can call me via imGui!");
                     }
 
                     isChecked = await imGui.CheckBox("Check Me!", isChecked);

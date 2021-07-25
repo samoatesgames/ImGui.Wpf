@@ -197,7 +197,12 @@ namespace ImGui.Wpf
 
         public async Task<TControl> HandleControl<TControl>(object[] data) where TControl : IImGuiControl
         {
-            var factory = m_controlFactories[typeof(TControl)];
+            if (!(m_controlFactories.TryGetValue(typeof(TControl), out var factory)))
+            {
+                factory = new ImGenericFactory<TControl>();
+                m_controlFactories[typeof(TControl)] = factory;
+            }
+
             var controlId = m_controlId++;
 
             if (!TryGetExistingControl<TControl>(controlId, out var control))
