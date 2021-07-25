@@ -77,6 +77,6 @@ using (var imGui = await ImGuiWpf.BeginPanel())
 
 ## Additional Features
 
- * Custom Styling :x:
+ * Custom Styling :x: (technically, this would be possible via custom controls)
  * Layout Serialization :x:
- * Custom Controls :x:
+ * Custom Controls :white_check_mark:
