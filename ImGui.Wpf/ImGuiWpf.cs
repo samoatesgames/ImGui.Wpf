@@ -1,44 +1,16 @@
-﻿using ImGui.Wpf.Factories;
+﻿using ImGui.Wpf.Controls;
+using ImGui.Wpf.Factories;
+using ImGui.Wpf.Layouts;
+using ImGui.Wpf.Styles;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
-using System.Windows.Media;
-using ImGui.Wpf.Controls;
-using ImGui.Wpf.Layouts;
-using ImGui.Wpf.Styles;
 
 namespace ImGui.Wpf
 {
-    public static class ImGuiWpfExtensions
-    {
-        public static void Deconstruct<T1, T2>(this Tuple<T1, T2> tuple, out T1 item1, out T2 item2)
-        {
-            item1 = tuple.Item1;
-            item2 = tuple.Item2;
-        }
-
-        public static TControl FindChildOfType<TControl>(this Panel panel) where TControl : FrameworkElement
-        {
-            foreach (var child in panel.Children)
-            {
-                if (child is TControl control)
-                {
-                    return control;
-                }
-            }
-
-            return null;
-        }
-
-        public static TType Cast<TType>(object input)
-        {
-            return (TType) input;
-        }
-    }
-
     public class ImGuiWpf : IDisposable
     {
         private readonly Panel m_controlOwner;
@@ -52,6 +24,16 @@ namespace ImGui.Wpf
 
         private ImGuiWpf()
         {
+            RegisterDefaultControls();
+        }
+
+        private ImGuiWpf(Panel owner) : this()
+        {
+            m_controlOwner = owner;
+        }
+
+        private void RegisterDefaultControls()
+        {
             RegisterControl<ImButton>();
             RegisterControl<ImCheckBox>();
             RegisterControl<ImComboBox>();
@@ -64,11 +46,6 @@ namespace ImGui.Wpf
             RegisterControl<ImTextBlock>();
             RegisterControl<ImTextBox>();
             RegisterControl<ImToggleButton>();
-        }
-
-        private ImGuiWpf(Panel owner) : this()
-        {
-            m_controlOwner = owner;
         }
 
         public void RegisterControl<TControl>(IImGuiControlFactory factory) where TControl : IImGuiControl
@@ -94,22 +71,21 @@ namespace ImGui.Wpf
 
         public static async Task<ImGuiWpf> BeginUi<TOwner>(TOwner owner) where TOwner : FrameworkElement, IAddChild
         {
-            var panel = owner as Panel;
-            if (panel == null)
+            if (owner is Panel panel)
             {
-                var frameworkElement = (FrameworkElement) owner;
-
-                StackPanel newPanel = null;
-                await frameworkElement.Dispatcher.InvokeAsync(() =>
-                {
-                    newPanel = new StackPanel();
-                    owner.AddChild(newPanel);
-                });
-
-                return await BeginUi(newPanel);
+                return await BeginUi(panel);
             }
 
-            return await BeginUi(panel);
+            var frameworkElement = (FrameworkElement)owner;
+
+            StackPanel newPanel = null;
+            await frameworkElement.Dispatcher.InvokeAsync(() =>
+            {
+                newPanel = new StackPanel();
+                owner.AddChild(newPanel);
+            });
+
+            return await BeginUi(newPanel);
         }
 
         public async void Dispose()
@@ -117,10 +93,9 @@ namespace ImGui.Wpf
             await InvalidateTree(0);
         }
 
-        public async Task BeginFrame()
+        public void BeginFrame()
         {
             m_controlId = 0;
-            await Task.CompletedTask;
         }
 
         public async Task EndFrame()
@@ -220,7 +195,7 @@ namespace ImGui.Wpf
 
         // Controls
 
-        private async Task<TControl> HandleControl<TControl>(object[] data) where TControl : IImGuiControl
+        public async Task<TControl> HandleControl<TControl>(object[] data) where TControl : IImGuiControl
         {
             var factory = m_controlFactories[typeof(TControl)];
             var controlId = m_controlId++;
@@ -247,94 +222,6 @@ namespace ImGui.Wpf
             });
 
             return (TControl)control;
-        }
-
-        public async Task<bool> Button(string text)
-        {
-            var button = await HandleControl<ImButton>(new object[] { text });
-            return button.GetState<bool>("Clicked");
-        }
-
-        public async Task<TType> ComboBox<TType>(string title, TType selected, params TType[] items)
-        {
-            var comboBox = await HandleControl<ImComboBox>(new object[] { title, selected, items });
-            return comboBox.GetState<TType>("Selected");
-        }
-
-        public async Task<bool> CheckBox(string text, bool isChecked)
-        {
-            var checkBox = await HandleControl<ImCheckBox>(new object[] { text, isChecked });
-            return checkBox.GetState<bool?>("Checked") ?? false;
-        }
-
-        public async Task Image(string imagePath)
-        {
-            await HandleControl<ImImage>(new object[] { imagePath });
-        }
-
-        public async Task Image(ImageSource imageSource)
-        {
-            await HandleControl<ImImage>(new object[] { imageSource });
-        }
-
-        public async Task<string> InputText(string title, string contents)
-        {
-            return await TextBox(title, contents);
-        }
-
-        public async Task Label(string message, params object[] args)
-        {
-            await HandleControl<ImLabel>(new object[] { message, args });
-        }
-
-        public async Task<TType> ListBox<TType>(string title, TType selected, params TType[] items)
-        {
-            var listBox = await HandleControl<ImListBox>(new object[] { title, selected, items });
-            return listBox.GetState<TType>("Selected");
-        }
-
-        public async Task ProgressBar(double value, double minimum, double maximum)
-        {
-            await HandleControl<ImProgressBar>(new object[] { value, minimum, maximum });
-        }
-
-        public async Task<bool> RadioButton(string title, bool isChecked)
-        {
-            var radioButton = await HandleControl<ImRadioButton>(new object[] { title, isChecked });
-            return radioButton.GetState<bool>("Checked");
-        }
-
-        public async Task<double> Slider(string title, double value, double minimum, double maximum)
-        {
-            var slider = await HandleControl<ImSlider>(new object[] { title, value, minimum, maximum });
-            return slider.GetState<double>("Value");
-        }
-
-        public async Task Text(string message, params object[] args)
-        {
-            await TextBlock(message, args);
-        }
-
-        public async Task TextBlock(string message, params object[] args)
-        {
-            await HandleControl<ImTextBlock>(new object[] { message, args });
-        }
-
-        public async Task<string> TextBox(string title, string contents)
-        {
-            var textBox = await HandleControl<ImTextBox>(new object[] { title, contents });
-            return textBox.GetState<string>("Text");
-        }
-
-        public async Task<bool> Toggle(string text, bool isChecked)
-        {
-            return await CheckBox(text, isChecked);
-        }
-
-        public async Task<bool> ToggleButton(string text, bool isChecked)
-        {
-            var toggleButton = await HandleControl<ImToggleButton>(new object[] { text, isChecked });
-            return toggleButton.GetState<bool>("Checked");
         }
     }
 }

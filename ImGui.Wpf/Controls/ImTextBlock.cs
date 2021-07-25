@@ -1,5 +1,22 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+
+namespace ImGui.Wpf
+{
+    public static class ImTextBlockExtension
+    {
+        public static async Task Text(this ImGuiWpf imGui, string message, params object[] args)
+        {
+            await imGui.TextBlock(message, args);
+        }
+
+        public static async Task TextBlock(this ImGuiWpf imGui, string message, params object[] args)
+        {
+            await imGui.HandleControl<Controls.ImTextBlock>(new object[] { message, args });
+        }
+    }
+}
 
 namespace ImGui.Wpf.Controls
 {

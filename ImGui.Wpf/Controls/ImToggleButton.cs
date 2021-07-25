@@ -1,5 +1,18 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls.Primitives;
+
+namespace ImGui.Wpf
+{
+    public static class ImToggleButtonExtension
+    {
+        public static async Task<bool> ToggleButton(this ImGuiWpf imGui, string text, bool isChecked)
+        {
+            var toggleButton = await imGui.HandleControl<Controls.ImToggleButton>(new object[] { text, isChecked });
+            return toggleButton.GetState<bool>("Checked");
+        }
+    }
+}
 
 namespace ImGui.Wpf.Controls
 {

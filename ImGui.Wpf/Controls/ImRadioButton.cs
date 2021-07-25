@@ -1,5 +1,18 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+
+namespace ImGui.Wpf
+{
+    public static class ImRadioButtonExtension
+    {
+        public static async Task<bool> RadioButton(this ImGuiWpf imGui, string title, bool isChecked)
+        {
+            var radioButton = await imGui.HandleControl<Controls.ImRadioButton>(new object[] { title, isChecked });
+            return radioButton.GetState<bool>("Checked");
+        }
+    }
+}
 
 namespace ImGui.Wpf.Controls
 {

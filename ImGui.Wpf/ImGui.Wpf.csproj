@@ -57,6 +57,7 @@
     <Compile Include="Controls\ImTextBlock.cs" />
     <Compile Include="Controls\ImTextBox.cs" />
     <Compile Include="Controls\ImToggleButton.cs" />
+    <Compile Include="ImGuiWpfExtensions.cs" />
     <Compile Include="Layouts\ImHorizontalLayout.cs" />
     <Compile Include="Layouts\ImLayout.cs" />
     <Compile Include="Layouts\ImVerticalLayout.cs" />

@@ -1,6 +1,19 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+
+namespace ImGui.Wpf
+{
+    public static class ImListBoxExtension
+    {
+        public static async Task<TType> ListBox<TType>(this ImGuiWpf imGui, string title, TType selected, params TType[] items)
+        {
+            var listBox = await imGui.HandleControl<Controls.ImListBox>(new object[] { title, selected, items });
+            return listBox.GetState<TType>("Selected");
+        }
+    }
+}
 
 namespace ImGui.Wpf.Controls
 {

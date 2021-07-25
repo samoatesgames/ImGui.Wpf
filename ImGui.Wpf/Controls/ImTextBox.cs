@@ -1,5 +1,23 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+
+namespace ImGui.Wpf
+{
+    public static class ImTextBoxExtension
+    {
+        public static async Task<string> InputText(this ImGuiWpf imGui, string title, string contents)
+        {
+            return await imGui.TextBox(title, contents);
+        }
+
+        public static async Task<string> TextBox(this ImGuiWpf imGui, string title, string contents)
+        {
+            var textBox = await imGui.HandleControl<Controls.ImTextBox>(new object[] { title, contents });
+            return textBox.GetState<string>("Text");
+        }
+    }
+}
 
 namespace ImGui.Wpf.Controls
 {

@@ -1,5 +1,17 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+
+namespace ImGui.Wpf
+{
+    public static class ImProgressBarExtension
+    {
+        public static async Task ProgressBar(this ImGuiWpf imGui, double value, double minimum, double maximum)
+        {
+            await imGui.HandleControl<Controls.ImProgressBar>(new object[] { value, minimum, maximum });
+        }
+    }
+}
 
 namespace ImGui.Wpf.Controls
 {

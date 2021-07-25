@@ -95,7 +95,7 @@ namespace ImGui.Wpf.Demo
             {
                 while (true)
                 {
-                    await imGui.BeginFrame();
+                    imGui.BeginFrame();
 
                     if (m_activeScript != null)
                     {

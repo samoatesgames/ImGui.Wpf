@@ -1,5 +1,18 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+
+namespace ImGui.Wpf
+{
+    public static class ImButtonExtension
+    {
+        public static async Task<bool> Button(this ImGuiWpf imGui, string text)
+        {
+            var button = await imGui.HandleControl<Controls.ImButton>(new object[] { text });
+            return button.GetState<bool>("Clicked");
+        }
+    }
+}
 
 namespace ImGui.Wpf.Controls
 {

@@ -1,5 +1,23 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+
+namespace ImGui.Wpf
+{
+    public static class ImCheckBoxExtension
+    {
+        public static async Task<bool> CheckBox(this ImGuiWpf imGui, string text, bool isChecked)
+        {
+            var checkBox = await imGui.HandleControl<Controls.ImCheckBox>(new object[] { text, isChecked });
+            return checkBox.GetState<bool?>("Checked") ?? false;
+        }
+
+        public static async Task<bool> Toggle(this ImGuiWpf imGui, string text, bool isChecked)
+        {
+            return await imGui.CheckBox(text, isChecked);
+        }
+    }
+}
 
 namespace ImGui.Wpf.Controls
 {

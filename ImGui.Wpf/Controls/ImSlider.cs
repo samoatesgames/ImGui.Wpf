@@ -1,5 +1,18 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+
+namespace ImGui.Wpf
+{
+    public static class ImSliderExtension
+    {
+        public static async Task<double> Slider(this ImGuiWpf imGui, string title, double value, double minimum, double maximum)
+        {
+            var slider = await imGui.HandleControl<Controls.ImSlider>(new object[] { title, value, minimum, maximum });
+            return slider.GetState<double>("Value");
+        }
+    }
+}
 
 namespace ImGui.Wpf.Controls
 {

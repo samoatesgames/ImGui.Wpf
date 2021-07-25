@@ -1,9 +1,26 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+
+namespace ImGui.Wpf
+{
+    public static class ImImageExtension
+    {
+        public static async Task Image(this ImGuiWpf imGui, string imagePath)
+        {
+            await imGui.HandleControl<Controls.ImImage>(new object[] { imagePath });
+        }
+
+        public static async Task Image(this ImGuiWpf imGui, ImageSource imageSource)
+        {
+            await imGui.HandleControl<Controls.ImImage>(new object[] { imageSource });
+        }
+    }
+}
 
 namespace ImGui.Wpf.Controls
 {

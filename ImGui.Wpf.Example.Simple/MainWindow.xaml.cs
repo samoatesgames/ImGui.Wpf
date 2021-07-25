@@ -27,7 +27,7 @@ namespace ImGui.Wpf.Example.Simple
             {
                 while (true)
                 {
-                    await imGui.BeginFrame();
+                    imGui.BeginFrame();
 
                     await imGui.Text("Hello World {0:F}", sliderValue);
                     if (await imGui.Button("Save"))
@@ -117,7 +117,7 @@ namespace ImGui.Wpf.Example.Simple
             {
                 while (true)
                 {
-                    await imGui.BeginFrame();
+                    imGui.BeginFrame();
 
                     await imGui.Text("This is a simple example of using ImGui.Wpf" +
                                      "The idea of this library is to implement an immediate mode " +

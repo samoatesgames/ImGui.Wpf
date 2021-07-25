@@ -1,6 +1,19 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+
+namespace ImGui.Wpf
+{
+    public static class ImComboBoxExtension
+    {
+        public static async Task<TType> ComboBox<TType>(this ImGuiWpf imGui, string title, TType selected, params TType[] items)
+        {
+            var comboBox = await imGui.HandleControl<Controls.ImComboBox>(new object[] { title, selected, items });
+            return comboBox.GetState<TType>("Selected");
+        }
+    }
+}
 
 namespace ImGui.Wpf.Controls
 {

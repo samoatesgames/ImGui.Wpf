@@ -1,5 +1,17 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+
+namespace ImGui.Wpf
+{
+    public static class ImLabelExtension
+    {
+        public static async Task Label(this ImGuiWpf imGui, string message, params object[] args)
+        {
+            await imGui.HandleControl<Controls.ImLabel>(new object[] { message, args });
+        }
+    }
+}
 
 namespace ImGui.Wpf.Controls
 {
