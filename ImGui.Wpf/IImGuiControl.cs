@@ -2,10 +2,8 @@
 
 namespace ImGui.Wpf
 {
-    public interface IImGuiControl
+    public interface IImGuiControl : IImGuiBase
     {
-        FrameworkElement WindowsControl { get; }
-
         void Update(object[] data);
 
         void ApplyStyle(IImGuiStyle style);

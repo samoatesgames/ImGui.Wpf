@@ -8,16 +8,18 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using System.Windows.Threading;
 
 namespace ImGui.Wpf
 {
     public class ImGuiWpf : IDisposable
     {
-        private readonly Panel m_controlOwner;
+        private readonly ImLayout m_rootLayout;
+        private readonly Dispatcher m_dispatcher;
         private readonly IImGuiStyle m_style = new DefaultStyle();
 
         private int m_controlId;
-        private readonly Dictionary<int, IImGuiControl> m_idToControlMap = new Dictionary<int, IImGuiControl>();
+        private readonly Dictionary<int, IImGuiBase> m_idToControlMap = new Dictionary<int, IImGuiBase>();
         private readonly Dictionary<Type, IImGuiControlFactory> m_controlFactories = new Dictionary<Type, IImGuiControlFactory>();
 
         private readonly Stack<ImLayout> m_layoutStack = new Stack<ImLayout>();
@@ -29,7 +31,10 @@ namespace ImGui.Wpf
 
         private ImGuiWpf(Panel owner) : this()
         {
-            m_controlOwner = owner;
+            m_dispatcher = owner.Dispatcher;
+
+            m_rootLayout = new ImVerticalLayout(owner, null);
+            m_layoutStack.Push(m_rootLayout);
         }
 
         private void RegisterDefaultControls()
@@ -111,7 +116,7 @@ namespace ImGui.Wpf
                 removedIds.Add(fromId - 1);
 
                 var controlToRemove = orphanedElement.WindowsControl;
-                await m_controlOwner.Dispatcher.InvokeAsync(() =>
+                await m_dispatcher.InvokeAsync(() =>
                 {
                     if (controlToRemove.Parent is Panel parent)
                     {
@@ -121,6 +126,11 @@ namespace ImGui.Wpf
                         while (panel?.Children.Count == 0)
                         {
                             parent = panel.Parent as Panel;
+                            if (panel == m_rootLayout.WindowsControl)
+                            {
+                                break;
+                            }
+                            
                             parent?.Children.Remove(panel);
                             panel = parent;
                         }
@@ -134,21 +144,21 @@ namespace ImGui.Wpf
             }
         }
 
-        private bool TryGetExistingControl<TControl>(int id, out IImGuiControl control)
+        private bool TryGetExistingControl<TControl>(int id, out TControl control) where TControl : IImGuiBase
         {
             if (!m_idToControlMap.TryGetValue(id, out var existingControl))
             {
-                control = null;
+                control = default;
                 return false;
             }
 
-            if (!(existingControl is TControl))
+            if (!(existingControl is TControl typedControl))
             {
-                control = null;
+                control = default;
                 return false;
             }
 
-            control = existingControl;
+            control = typedControl;
             return true;
         }
 
@@ -161,41 +171,91 @@ namespace ImGui.Wpf
 
         public async Task<ImLayout> BeginHorizontal()
         {
-            ImLayout newLayout = null;
+            var controlId = m_controlId++;
 
-            await m_controlOwner.Dispatcher.InvokeAsync(() =>
+            if (TryGetExistingControl<ImHorizontalLayout>(controlId, out var layout))
             {
-                newLayout = new ImHorizontalLayout(PopLayout);
+                m_layoutStack.Push(layout);
+                return layout;
+            }
 
-                var owner = m_layoutStack.Count == 0 ? m_controlOwner : m_layoutStack.Peek().Panel;
-                owner.Children.Add(newLayout.Panel);
+            await InvalidateTree(controlId);
 
-                m_layoutStack.Push(newLayout);
+            await m_dispatcher.InvokeAsync(() =>
+            {
+                layout = new ImHorizontalLayout(PopLayout);
+
+                var owner = m_layoutStack.Peek();
+                owner.AddChild(layout);
+
+                m_layoutStack.Push(layout);
+
+                m_idToControlMap[controlId] = layout;
             });
 
-            return newLayout;
+            return layout;
+        }
+
+        public async Task<ImLayout> BeginHorizontal(params string[] columnWidths)
+        {
+            var controlId = m_controlId++;
+
+            if (TryGetExistingControl<ImHorizontalLayout>(controlId, out var layout))
+            {
+                if (layout.HasColumnWidths(columnWidths))
+                {
+                    m_layoutStack.Push(layout);
+                    return layout;
+                }
+            }
+
+            await InvalidateTree(controlId);
+
+            await m_dispatcher.InvokeAsync(() =>
+            {
+                layout = new ImHorizontalLayout(columnWidths, PopLayout);
+
+                var owner = m_layoutStack.Peek();
+                owner.AddChild(layout);
+
+                m_layoutStack.Push(layout);
+
+                m_idToControlMap[controlId] = layout;
+            });
+
+            return layout;
         }
 
         public async Task<ImLayout> BeginVertical()
         {
-            ImLayout newLayout = null;
+            var controlId = m_controlId++;
 
-            await m_controlOwner.Dispatcher.InvokeAsync(() =>
+            if (TryGetExistingControl<ImVerticalLayout>(controlId, out var layout))
             {
-                newLayout = new ImVerticalLayout(PopLayout);
+                m_layoutStack.Push(layout);
+                return layout;
+            }
 
-                var owner = m_layoutStack.Count == 0 ? m_controlOwner : m_layoutStack.Peek().Panel;
-                owner.Children.Add(newLayout.Panel);
+            await InvalidateTree(controlId);
 
-                m_layoutStack.Push(newLayout);
+            await m_dispatcher.InvokeAsync(() =>
+            {
+                layout = new ImVerticalLayout(PopLayout);
+
+                var owner = m_layoutStack.Peek();
+                owner.AddChild(layout);
+
+                m_layoutStack.Push(layout);
+
+                m_idToControlMap[controlId] = layout;
             });
 
-            return newLayout;
+            return layout;
         }
 
         // Controls
 
-        public async Task<TControl> HandleControl<TControl>(object[] data) where TControl : IImGuiControl
+        public async Task<TControl> HandleControl<TControl>(object[] data) where TControl : class, IImGuiControl
         {
             if (!(m_controlFactories.TryGetValue(typeof(TControl), out var factory)))
             {
@@ -210,14 +270,18 @@ namespace ImGui.Wpf
                 await InvalidateTree(controlId);
             }
             
-            await m_controlOwner.Dispatcher.InvokeAsync(() =>
+            await m_dispatcher.InvokeAsync(() =>
             {
                 if (control == null)
                 {
-                    control = factory.CreateNew();
+                    control = factory.CreateNew() as TControl;
+                    if (control == null)
+                    {
+                        return;
+                    }
 
-                    var owner = m_layoutStack.Count == 0 ? m_controlOwner : m_layoutStack.Peek().Panel;
-                    owner.Children.Add(control.WindowsControl);
+                    var owner = m_layoutStack.Peek();
+                    owner.AddChild(control);
                 }
 
                 control.ApplyStyle(m_style);
@@ -226,7 +290,7 @@ namespace ImGui.Wpf
                 m_idToControlMap[controlId] = control;
             });
 
-            return (TControl)control;
+            return control;
         }
     }
 }
