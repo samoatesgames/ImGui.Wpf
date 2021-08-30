@@ -10,6 +10,16 @@ namespace ImGui.Wpf
         {
             await imGui.HandleControl<Controls.ImLabel>(new object[] { message, args });
         }
+
+        public static async Task Break(this ImGuiWpf imGui)
+        {
+            await imGui.HandleControl<Controls.ImLabel>(new object[] { "", null });
+        }
+
+        public static async Task Space(this ImGuiWpf imGui)
+        {
+            await imGui.HandleControl<Controls.ImLabel>(new object[] { "", null });
+        }
     }
 }
 
