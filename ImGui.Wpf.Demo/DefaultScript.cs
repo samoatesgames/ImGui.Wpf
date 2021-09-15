@@ -104,7 +104,7 @@ public class Demo : IGuiScript
         {
             ModernDialog.ShowMessage(
                 message,
-                "",
+                "ImGui.Wpf Demo",
                 MessageBoxButton.OK
             );
         });
